@@ -5,6 +5,7 @@ import net.kalbskinder.systems.npc.NPC;
 import net.kalbskinder.systems.npc.NpcLookSystem;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.EntityPose;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;

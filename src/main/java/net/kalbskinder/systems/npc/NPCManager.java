@@ -26,9 +26,9 @@ public class NPCManager {
         return Collections.unmodifiableCollection(npcList.values());
     }
 
-    public void updateNpc(UUID id, NPC npc) {
-        this.removeNPC(id);
-        npcList.put(id, npc);
+    public void updateNpc(NPC npc) {
+        this.removeNPC(npc.getUuid());
+        npcList.put(npc.getUuid(), npc);
     }
 
     public void removeNPC(UUID id) {

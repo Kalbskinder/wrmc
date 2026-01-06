@@ -3,12 +3,14 @@ package net.kalbskinder.systems.npc;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityPose;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.entity.metadata.avatar.MannequinMeta;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.network.player.ResolvableProfile;
 
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -24,7 +26,9 @@ public class NPC {
 
     private Pos pos;
     private final boolean lookAtPlayers;
+    private EntityPose pose;
 
+    private final Set<EntityPose> allowedPoses = Set.of(EntityPose.SNEAKING, EntityPose.STANDING, EntityPose.SLEEPING, EntityPose.SWIMMING, EntityPose.FALL_FLYING);
     private final NPCManager npcManager = NPCManager.getInstance();
 
     public NPC(
@@ -51,7 +55,6 @@ public class NPC {
         npc.setInstance(instance, pos);
         npc.setNoGravity(true);
 
-
         npc.editEntityMeta(MannequinMeta.class, meta -> {
             // Set a skin profile from username or UUID
             PlayerSkin skin = PlayerSkin.fromUuid(skinUUID); // fetches texture & signature
@@ -75,16 +78,20 @@ public class NPC {
         this.pos = pos;
     }
 
+    public void setPose(EntityPose pose) {
+        if (allowedPoses.contains(pose)) {
+            this.pose = pose;
+            this.entity.setPose(pose);
+        }
+        npcManager.updateNpc(this);
+    }
+
     public UUID getUuid() {
         return this.uuid;
     }
 
     public Entity getEntity() {
         return entity;
-    }
-
-    public InstanceContainer getInstance() {
-        return instance;
     }
 
     public boolean isLookAtPlayers() {
