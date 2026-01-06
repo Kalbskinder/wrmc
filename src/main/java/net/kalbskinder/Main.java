@@ -2,6 +2,7 @@ package net.kalbskinder;
 
 import net.kalbskinder.events.EventManager;
 import net.kalbskinder.systems.npc.NPC;
+import net.kalbskinder.systems.npc.NpcLookSystem;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.InstanceContainer;
@@ -28,6 +29,9 @@ public class Main {
         EventManager eventManager = new EventManager(instance);
         eventManager.registerEvents();
 
+        // Start NPC systems
+        NpcLookSystem.start();
+
         // Set the ChunkGenerator
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
 
@@ -36,7 +40,7 @@ public class Main {
 
 
         // Summon test npc
-        NPC npc = new NPC("Test", "<yellow><bold>CLICK<reset>", "7f912e2c-46fd-4c14-b7d0-376cd00ba373", new Pos(0.0, 40.0, 0.0), false, instance);
+        NPC npc = new NPC("Obama", "<yellow><bold>CLICK<reset>", "7f912e2c-46fd-4c14-b7d0-376cd00ba373", new Pos(0.0, 40.0, 0.0), true, instance);
         UUID npcUuid = npc.spawn();
     }
 }

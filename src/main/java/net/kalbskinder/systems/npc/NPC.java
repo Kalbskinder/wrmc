@@ -1,6 +1,5 @@
 package net.kalbskinder.systems.npc;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
@@ -15,6 +14,8 @@ import java.util.UUID;
 
 public class NPC {
     private UUID uuid;
+    private Entity entity;
+
     private final InstanceContainer instance;
     private final String name;
     private final String description;
@@ -22,9 +23,9 @@ public class NPC {
     private final MiniMessage mm = MiniMessage.miniMessage();
 
     private Pos pos;
-    private boolean lookAtPlayers = false;
+    private final boolean lookAtPlayers;
 
-    private final NPCManager npcManager = new NPCManager();
+    private final NPCManager npcManager = NPCManager.getInstance();
 
     public NPC(
             String name,
@@ -45,6 +46,7 @@ public class NPC {
 
     public UUID spawn() {
         Entity npc = new Entity(EntityType.MANNEQUIN);
+        this.entity = npc;
         this.uuid = npc.getUuid();
         npc.setInstance(instance, pos);
         npc.setNoGravity(true);
@@ -64,9 +66,6 @@ public class NPC {
             meta.setDescription(mm.deserialize(description));
         });
 
-        // TODO: Implement npc looking at players in a radius
-
-
         npcManager.addNpc(this);
         return npc.getUuid();
     }
@@ -78,5 +77,17 @@ public class NPC {
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public InstanceContainer getInstance() {
+        return instance;
+    }
+
+    public boolean isLookAtPlayers() {
+        return lookAtPlayers;
     }
 }

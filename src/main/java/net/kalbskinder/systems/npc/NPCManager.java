@@ -1,11 +1,18 @@
 package net.kalbskinder.systems.npc;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class NPCManager {
+    private static final NPCManager INSTANCE = new NPCManager();
+
+    public static NPCManager getInstance() {
+        return INSTANCE;
+    }
+
     private final Map<UUID, NPC> npcList = new HashMap<>();
+
+    private NPCManager() {
+    }
 
     public void addNpc(NPC npc) {
         npcList.put(npc.getUuid(), npc);
@@ -13,6 +20,10 @@ public class NPCManager {
 
     public NPC getNpc(UUID id) {
         return npcList.get(id);
+    }
+
+    public Collection<NPC> getAllNpcs() {
+        return Collections.unmodifiableCollection(npcList.values());
     }
 
     public void updateNpc(UUID id, NPC npc) {
