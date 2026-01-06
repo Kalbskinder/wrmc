@@ -1,6 +1,7 @@
 package net.kalbskinder.systems.npc;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
@@ -10,13 +11,15 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.network.player.ResolvableProfile;
 
 import java.util.UUID;
-import java.util.function.Consumer;
+
 
 public class NPC {
     private UUID uuid;
     private final InstanceContainer instance;
     private final String name;
+    private final String description;
     private final String skinUUID;
+    private final MiniMessage mm = MiniMessage.miniMessage();
 
     private Pos pos;
     private boolean lookAtPlayers = false;
@@ -25,6 +28,7 @@ public class NPC {
 
     public NPC(
             String name,
+            String description,
             String skinUUID,
             Pos pos,
             boolean lookAtPlayers,
@@ -32,6 +36,7 @@ public class NPC {
     )
     {
         this.name = name;
+        this.description = description;
         this.skinUUID = skinUUID;
         this.pos = pos;
         this.lookAtPlayers = lookAtPlayers;
@@ -53,8 +58,10 @@ public class NPC {
             meta.setProfile(profile);
 
             // Example: custom name
-            meta.setCustomName(Component.text(name));
+            meta.setCustomName(mm.deserialize(name));
             meta.setCustomNameVisible(true);
+
+            meta.setDescription(mm.deserialize(description));
         });
 
         // TODO: Implement npc looking at players in a radius

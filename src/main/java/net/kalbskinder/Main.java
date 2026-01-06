@@ -36,7 +36,7 @@ public class Main {
 
 
         // Summon test npc
-        NPC npc = new NPC("Test", "7f912e2c-46fd-4c14-b7d0-376cd00ba373", new Pos(0.0, 40.0, 0.0), false, instance);
+        NPC npc = new NPC("Test", "<yellow><bold>CLICK<reset>", "7f912e2c-46fd-4c14-b7d0-376cd00ba373", new Pos(0.0, 40.0, 0.0), false, instance);
         UUID npcUuid = npc.spawn();
     }
 }
