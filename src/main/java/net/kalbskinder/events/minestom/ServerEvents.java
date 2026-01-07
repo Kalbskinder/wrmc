@@ -1,7 +1,7 @@
 package net.kalbskinder.events.minestom;
 
 import net.kalbskinder.config.ConfigManager;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kalbskinder.events.BasicEvent;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.server.ServerListPingEvent;
@@ -12,13 +12,11 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ServerEvents {
-    private final GlobalEventHandler eventHandler;
-    private final MiniMessage mm = MiniMessage.miniMessage();
+public class ServerEvents extends BasicEvent {
     private final ConfigManager config = new ConfigManager();
 
     public ServerEvents(GlobalEventHandler eventHandler) {
-        this.eventHandler = eventHandler;
+        super(eventHandler);
     }
 
     public void register() {
@@ -28,12 +26,12 @@ public class ServerEvents {
         int protocol = config.getInt("protocol-version", 0);
         String motd = config.getString("motd", "Welcome!");
 
-        eventHandler.addListener(ServerListPingEvent.class, event -> {
+        getEventHandler().addListener(ServerListPingEvent.class, event -> {
             int onlinePlayers = MinecraftServer.getConnectionManager().getOnlinePlayerCount();
 
             event.setStatus(Status.builder()
                     .favicon(favicon)
-                    .description(mm.deserialize(motd))
+                    .description(getMm().deserialize(motd))
                     .playerInfo(onlinePlayers, maxPlayers)
                     .versionInfo(new Status.VersionInfo(version, protocol))
                     .build());
