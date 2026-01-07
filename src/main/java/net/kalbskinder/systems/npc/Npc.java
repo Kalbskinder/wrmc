@@ -14,27 +14,55 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class NPC {
+public class Npc {
+    // Lombok may not be enabled in every build environment; keep explicit accessors for core fields.
     private UUID uuid;
     private Entity entity;
 
     private final InstanceContainer instance;
     private final String name;
     private final String description;
-    private final String skinUUID;
-    private final MiniMessage mm = MiniMessage.miniMessage();
+    private final String skinUuid;
 
     private Pos pos;
     private final boolean lookAtPlayers;
-    private EntityPose pose;
+
+    public InstanceContainer getInstance() {
+        return instance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSkinUuid() {
+        return skinUuid;
+    }
+
+    public Pos getPos() {
+        return pos;
+    }
+
+    public void setPos(Pos pos) {
+        this.pos = pos;
+    }
+
+    public boolean isLookAtPlayers() {
+        return lookAtPlayers;
+    }
 
     private final Set<EntityPose> allowedPoses = Set.of(EntityPose.SNEAKING, EntityPose.STANDING, EntityPose.SLEEPING, EntityPose.SWIMMING, EntityPose.FALL_FLYING);
-    private final NPCManager npcManager = NPCManager.getInstance();
+    private final NpcManager npcManager = NpcManager.getInstance();
+    private final MiniMessage mm = MiniMessage.miniMessage();
 
-    public NPC(
+    public Npc(
             String name,
             String description,
-            String skinUUID,
+            String skinUuid,
             Pos pos,
             boolean lookAtPlayers,
             InstanceContainer instance
@@ -42,7 +70,7 @@ public class NPC {
     {
         this.name = name;
         this.description = description;
-        this.skinUUID = skinUUID;
+        this.skinUuid = skinUuid;
         this.pos = pos;
         this.lookAtPlayers = lookAtPlayers;
         this.instance = instance;
@@ -57,7 +85,7 @@ public class NPC {
 
         npc.editEntityMeta(MannequinMeta.class, meta -> {
             // Set a skin profile from username or UUID
-            PlayerSkin skin = PlayerSkin.fromUuid(skinUUID); // fetches texture & signature
+            PlayerSkin skin = PlayerSkin.fromUuid(skinUuid); // fetches texture & signature
             ResolvableProfile profile = new ResolvableProfile(skin);
 
             meta.setProfile(profile);
@@ -73,28 +101,26 @@ public class NPC {
         return npc.getUuid();
     }
 
-    // ---------------- Getter & Setter -------------------
-    public void setPos(Pos pos) {
-        this.pos = pos;
-    }
-
     public void setPose(EntityPose pose) {
         if (allowedPoses.contains(pose)) {
-            this.pose = pose;
             this.entity.setPose(pose);
         }
         npcManager.updateNpc(this);
     }
 
     public UUID getUuid() {
-        return this.uuid;
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public Entity getEntity() {
         return entity;
     }
 
-    public boolean isLookAtPlayers() {
-        return lookAtPlayers;
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 }

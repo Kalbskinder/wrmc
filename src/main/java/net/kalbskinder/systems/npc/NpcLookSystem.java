@@ -26,7 +26,7 @@ public final class NpcLookSystem {
     }
 
     private static void tick() {
-        for (NPC npc : NPCManager.getInstance().getAllNpcs()) {
+        for (Npc npc : NpcManager.getInstance().getAllNpcs()) {
             if (!npc.isLookAtPlayers()) continue;
 
             Entity entity = npc.getEntity();

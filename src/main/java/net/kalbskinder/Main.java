@@ -1,7 +1,8 @@
 package net.kalbskinder;
 
 import net.kalbskinder.events.EventManager;
-import net.kalbskinder.systems.npc.NPC;
+import net.kalbskinder.systems.npc.InteractableNpc;
+import net.kalbskinder.systems.npc.Npc;
 import net.kalbskinder.systems.npc.NpcLookSystem;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -41,7 +42,11 @@ public class Main {
 
 
         // Summon test npc
-        NPC npc = new NPC("Obama", "<yellow><bold>CLICK<reset>", "7f912e2c-46fd-4c14-b7d0-376cd00ba373", new Pos(0.0, 40.0, 0.0), true, instance);
+        Npc npc = new Npc("Obama", "<red><bold>DON'T CLICK<reset>", "7f912e2c-46fd-4c14-b7d0-376cd00ba373", new Pos(0.0, 40.0, 0.0), true, instance);
         UUID npcUuid = npc.spawn();
+        npc.setPose(EntityPose.SLEEPING);
+
+        InteractableNpc npc1 = new InteractableNpc("Interactable", "<yellow><bold>CLICK<reset>", "b956ded3-4384-4f1a-b883-bd50f5746043", new Pos(3.0, 40.0, 2.0), true, instance);
+        npc1.spawn();
     }
 }
