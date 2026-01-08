@@ -49,8 +49,7 @@ public class NpcManager {
 
     public UUID getNpcUuid(UUID interactionUuid) {
         for (Map.Entry<UUID, Npc> entry : npcList.entrySet()) {
-            if (entry.getValue() instanceof InteractableNpc) {
-                InteractableNpc interactableNpc = (InteractableNpc) entry.getValue();
+            if (entry.getValue() instanceof InteractableNpc interactableNpc) {
                 if (interactableNpc.getInteractionEntityUuid().equals(interactionUuid)) {
                     logger.debug("Found NPC UUID {} with skinUuuid {} for interaction entity UUID {}.",
                             entry.getKey(), interactableNpc.getSkinUuid(), interactionUuid);

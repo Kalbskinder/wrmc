@@ -8,7 +8,7 @@ import net.minestom.server.event.player.PlayerEntityInteractEvent;
 
 public class NpcClickEvent extends BasicEvent {
 
-    private final NpcManager npcManager = new NpcManager();
+    private final NpcManager npcManager = NpcManager.getInstance();
 
     public NpcClickEvent(GlobalEventHandler eventHandler) {
         super(eventHandler);
