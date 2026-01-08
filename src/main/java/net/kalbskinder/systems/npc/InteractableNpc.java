@@ -65,7 +65,7 @@ public class InteractableNpc extends Npc {
         this.interactionEntityUuid = interactionEntity.getUuid();
         interactionEntity.setNoGravity(true);
         interactionEntity.editEntityMeta(InteractionMeta.class, meta -> {
-            meta.setWidth(0.9f);
+            meta.setWidth(0.61f);
             meta.setHeight(1.8f);
         });
         interactionEntity.setInstance(getInstance(), getPos());
@@ -76,5 +76,25 @@ public class InteractableNpc extends Npc {
 
     public UUID getInteractionEntityUuid() {
         return this.interactionEntityUuid;
+    }
+
+    public NpcClickAction getOnRightClick() {
+        return onRightClick;
+    }
+
+    public void setOnRightClick(NpcClickAction onRightClick) {
+        this.onRightClick = onRightClick;
+    }
+
+    public NpcClickAction getOnLeftClick() {
+        return onLeftClick;
+    }
+
+    public void setOnLeftClick(NpcClickAction onLeftClick) {
+        this.onLeftClick = onLeftClick;
+    }
+
+    public boolean getRedirectClicks() {
+        return this.redirectClicks;
     }
 }

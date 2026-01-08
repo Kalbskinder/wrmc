@@ -48,5 +48,11 @@ public class Main {
 
         InteractableNpc npc1 = new InteractableNpc("Interactable", "<yellow><bold>CLICK<reset>", "b956ded3-4384-4f1a-b883-bd50f5746043", new Pos(3.0, 40.0, 2.0), true, instance);
         npc1.spawn();
-    }
+        npc1.setOnRightClick(player -> {
+            player.sendMessage("You right-clicked the NPC!");
+        });
+
+        npc1.setOnLeftClick(player  -> {
+            player.sendMessage("You left-clicked the NPC!");
+        }); }
 }
