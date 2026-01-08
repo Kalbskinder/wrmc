@@ -74,7 +74,7 @@ public final class ChatSystem {
     public void onPlayerMove(Player player) {
         if (player == null || player.isRemoved()) return;
         PlayerState state = states.get(player.getUuid());
-        if (state == null || state.display == null || state.display.isRemoved()) return;
+        if (state == null || state.displayFront == null || state.displayFront.isRemoved()) return;
         updateDisplayPosition(player, state);
     }
 
@@ -105,10 +105,15 @@ public final class ChatSystem {
     }
 
     private void ensureDisplaySpawned(Player player, PlayerState state) {
-        if (state.display != null && !state.display.isRemoved()) {
+        // Ensure both displays exist
+        if (state.displayFront != null && !state.displayFront.isRemoved()
+                && state.displayBack != null && !state.displayBack.isRemoved()) {
             // Re-spawn if it got de-instanced.
-            if (state.display.getInstance() == null && player.getInstance() != null) {
-                state.display.setInstance(player.getInstance(), bubblePos(player));
+            if (state.displayFront.getInstance() == null && player.getInstance() != null) {
+                state.displayFront.setInstance(player.getInstance(), bubblePosFront(player));
+            }
+            if (state.displayBack.getInstance() == null && player.getInstance() != null) {
+                state.displayBack.setInstance(player.getInstance(), bubblePosBack(player));
             }
             return;
         }
@@ -116,6 +121,16 @@ public final class ChatSystem {
         Instance instance = player.getInstance();
         if (instance == null) return;
 
+        state.removeDisplay();
+
+        state.displayFront = createDisplayEntity();
+        state.displayBack = createDisplayEntity();
+
+        state.displayFront.setInstance(instance, bubblePosFront(player));
+        state.displayBack.setInstance(instance, bubblePosBack(player));
+    }
+
+    private Entity createDisplayEntity() {
         Entity display = new Entity(EntityType.TEXT_DISPLAY);
 
         TextDisplayMeta meta = (TextDisplayMeta) display.getEntityMeta();
@@ -128,13 +143,12 @@ public final class ChatSystem {
 
         // Make sure the display doesn't collide / interact.
         display.setAutoViewable(true);
-
-        state.display = display;
-        display.setInstance(instance, bubblePos(player));
+        return display;
     }
 
     private void refreshDisplayText(PlayerState state) {
-        if (state.display == null || state.display.isRemoved()) return;
+        if ((state.displayFront == null || state.displayFront.isRemoved())
+                && (state.displayBack == null || state.displayBack.isRemoved())) return;
 
         Component combined = Component.empty();
 
@@ -149,34 +163,55 @@ public final class ChatSystem {
             );
         }
 
-        TextDisplayMeta meta = (TextDisplayMeta) state.display.getEntityMeta();
-        meta.setText(combined);
-    }
-
-
-    private void updateDisplayPosition(Player player, PlayerState state) {
-        if (state.display == null || state.display.isRemoved()) return;
-        if (player.getInstance() == null) return;
-
-        Pos target = bubblePos(player);
-
-        // If the player changed instance, move the display too.
-        if (state.display.getInstance() != player.getInstance()) {
-            state.display.setInstance(player.getInstance(), target);
-        } else {
-            state.display.teleport(target);
+        if (state.displayFront != null && !state.displayFront.isRemoved()) {
+            TextDisplayMeta meta = (TextDisplayMeta) state.displayFront.getEntityMeta();
+            meta.setText(combined);
+        }
+        if (state.displayBack != null && !state.displayBack.isRemoved()) {
+            TextDisplayMeta meta = (TextDisplayMeta) state.displayBack.getEntityMeta();
+            meta.setText(combined);
         }
     }
 
-    private Pos bubblePos(Player player) {
+    private void updateDisplayPosition(Player player, PlayerState state) {
+        if (player.getInstance() == null) return;
+
+        Pos targetFront = bubblePosFront(player);
+        Pos targetBack = bubblePosBack(player);
+
+        if (state.displayFront != null && !state.displayFront.isRemoved()) {
+            if (state.displayFront.getInstance() != player.getInstance()) {
+                state.displayFront.setInstance(player.getInstance(), targetFront);
+            } else {
+                state.displayFront.teleport(targetFront);
+            }
+        }
+
+        if (state.displayBack != null && !state.displayBack.isRemoved()) {
+            if (state.displayBack.getInstance() != player.getInstance()) {
+                state.displayBack.setInstance(player.getInstance(), targetBack);
+            } else {
+                state.displayBack.teleport(targetBack);
+            }
+        }
+    }
+
+    private Pos bubblePosFront(Player player) {
         Pos p = player.getPosition();
         return new Pos(p.x(), p.y() + BASE_Y_OFFSET, p.z(), p.yaw(), 0);
+    }
+
+    private Pos bubblePosBack(Player player) {
+        Pos p = player.getPosition();
+        // Mirror by rotating 180 degrees.
+        return new Pos(p.x(), p.y() + BASE_Y_OFFSET, p.z(), p.yaw() + 180.0f, 0);
     }
 
     private static final class PlayerState {
         private final Deque<String> lines = new ArrayDeque<>(MAX_LINES);
         private final Deque<Task> expiryTasks = new ArrayDeque<>();
-        private Entity display;
+        private Entity displayFront;
+        private Entity displayBack;
 
         void addLine(String line) {
             // We store oldest->newest; newest must be bottom, which matches rendering order.
@@ -187,10 +222,14 @@ public final class ChatSystem {
         }
 
         void removeDisplay() {
-            if (display != null && !display.isRemoved()) {
-                display.remove();
+            if (displayFront != null && !displayFront.isRemoved()) {
+                displayFront.remove();
             }
-            display = null;
+            if (displayBack != null && !displayBack.isRemoved()) {
+                displayBack.remove();
+            }
+            displayFront = null;
+            displayBack = null;
         }
 
         void cleanup() {
