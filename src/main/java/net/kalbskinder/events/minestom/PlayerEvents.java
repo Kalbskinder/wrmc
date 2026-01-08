@@ -2,11 +2,14 @@ package net.kalbskinder.events.minestom;
 
 import net.kalbskinder.events.BasicEvent;
 import net.kalbskinder.events.InstanceEvent;
+import net.kalbskinder.systems.chat.ChatSystem;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.player.PlayerDisconnectEvent;
+import net.minestom.server.event.player.PlayerMoveEvent;
 import net.minestom.server.event.player.PlayerSkinInitEvent;
 import net.minestom.server.instance.InstanceContainer;
 
@@ -26,6 +29,14 @@ public class PlayerEvents extends InstanceEvent {
         getEventHandler().addListener(PlayerSkinInitEvent.class, event -> {
             PlayerSkin skin = PlayerSkin.fromUsername("Kalbskinder");
             event.setSkin(skin);
+        });
+
+        getEventHandler().addListener(PlayerMoveEvent.class, event -> {
+            ChatSystem.getInstance().onPlayerMove(event.getPlayer());
+        });
+
+        getEventHandler().addListener(PlayerDisconnectEvent.class, event -> {
+            ChatSystem.getInstance().onPlayerDisconnect(event.getPlayer());
         });
     }
 }
