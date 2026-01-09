@@ -7,11 +7,13 @@ import net.kalbskinder.systems.npc.Npc;
 import net.kalbskinder.systems.npc.NpcLookSystem;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityPose;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.client.play.ClientInputPacket;
 
 import java.util.UUID;
 
@@ -60,5 +62,21 @@ public class Main {
         // Spawn test rally car (currently just a boat entity).
         RallyCar rallyCar = new RallyCar();
         rallyCar.setInstance(instance, new Pos(5.0, 40.0, 0.0));
+
+        MinecraftServer.getPacketListenerManager()
+                .setListener(ClientInputPacket.class, (packet, player) -> {
+
+                    Entity vehicle = player.getVehicle();
+                    if (!(vehicle instanceof RallyCar car)) return;
+
+                    boolean forward = packet.forward();
+                    boolean backward = packet.backward();
+                    boolean left = packet.left();
+                    boolean right = packet.right();
+                    boolean handbrake = packet.jump(); // future handbrake implementation
+
+                    car.setInput(forward, backward, left, right, handbrake);
+                });
+
     }
 }

@@ -11,13 +11,25 @@ public class RallyCar extends Entity {
     private float yaw;           // car direction
     private float steering;      // -1..1
     private float throttle;      // -1..1
+    private boolean braking;
+    private boolean handbrake;
 
     // Tuning values
-    private static final double ENGINE_FORCE = 0.08;
-    private static final double BRAKE_FORCE = 0.12;
+    private static final double ENGINE_FORCE = 0.05;
+    private static final double BRAKE_FORCE = 0.07;
     private static final double MAX_SPEED = 1.2;
     private static final double FRICTION = 0.96;
     private static final double DRIFT_FACTOR = 0.85;
+    private static final double MAX_STEER_ANGLE = 2.8; // degrees
+    private static final double MIN_TURN_RATE = 0.9;    // high speed
+    private static final double MAX_TURN_RATE = 2.8;    // low speed
+
+    // Keep this very close to 1.0 for slow speed loss.
+    private static final double COAST_FRICTION = 0.995;
+
+    // TODO: adjust this when implementing drifting
+    private static final double HANDBRAKE_FRICTION = 0.88;
+
 
     public RallyCar() {
         super(EntityType.ARMOR_STAND);
@@ -27,9 +39,11 @@ public class RallyCar extends Entity {
         });
     }
 
-    public void setInput(boolean forward, boolean backward, boolean left, boolean right) {
-        throttle = forward ? 1 : backward ? -1 : 0;
+    public void setInput(boolean forward, boolean backward, boolean left, boolean right, boolean handbrake) {
+        throttle = forward ? 1 : 0;
         steering = left ? -1 : right ? 1 : 0;
+        braking = backward;
+        this.handbrake = handbrake;
     }
 
     @Override
@@ -37,8 +51,31 @@ public class RallyCar extends Entity {
         // If we're not spawned yet, do nothing.
         if (getInstance() == null) return;
 
-        // Steering changes yaw
-        yaw += steering * 2.5f;
+        double speed = velocity.length();
+
+        // Steering effectiveness decreases with speed
+        double speedFactor = 1.0 - Math.min(speed / MAX_SPEED, 1.0);
+
+        // Turn rate interpolation
+        double turnRate = MIN_TURN_RATE +
+                (MAX_TURN_RATE - MIN_TURN_RATE) * speedFactor;
+
+        // Desired steering angle
+        double steerAngle = steering * MAX_STEER_ANGLE * turnRate;
+
+        // Rotate velocity vector (this is the key)
+        if (speed > 0.01 && steering != 0) {
+            double radians = Math.toRadians(steerAngle);
+
+            double cos = Math.cos(radians);
+            double sin = Math.sin(radians);
+
+            velocity = new Vec(
+                    velocity.x() * cos - velocity.z() * sin,
+                    0,
+                    velocity.x() * sin + velocity.z() * cos
+            );
+        }
 
         // Forward direction
         Vec forward = new Vec(
@@ -47,12 +84,15 @@ public class RallyCar extends Entity {
                 Math.cos(Math.toRadians(yaw))
         );
 
-        // Acceleration / braking
+        // Acceleration
         if (throttle != 0) {
             velocity = velocity.add(forward.mul(ENGINE_FORCE * throttle));
-        } else {
-            // mild braking when no throttle (uses BRAKE_FORCE as a damping term)
-            velocity = velocity.mul(1.0 - (BRAKE_FORCE * 0.25));
+        }
+
+        // Braking
+        if (braking && velocity.length() > 0.01) {
+            Vec brakeDir = velocity.normalize().mul(-BRAKE_FORCE / 8);
+            velocity = velocity.add(brakeDir);
         }
 
         // Clamp speed
@@ -67,11 +107,27 @@ public class RallyCar extends Entity {
         // Reduce sideways velocity (drift control)
         velocity = forwardVel.add(sidewaysVel.mul(DRIFT_FACTOR));
 
-        // Friction
-        velocity = velocity.mul(FRICTION);
+        // Friction / drag
+        if (throttle != 0) {
+            velocity = velocity.mul(FRICTION);
+        } else {
+            velocity = velocity.mul(COAST_FRICTION);
+        }
+
+        if (handbrake) {
+            velocity = velocity.mul(HANDBRAKE_FRICTION);
+        }
 
         // Move entity inside the same instance
         teleport(getPosition().add(velocity));
+
+
+        if (velocity.length() > 0.01) {
+            yaw = (float) Math.toDegrees(
+                    Math.atan2(-velocity.x(), velocity.z())
+            );
+        }
+
         setView(yaw, 0);
     }
 
