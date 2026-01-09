@@ -1,6 +1,8 @@
 package net.kalbskinder.events;
 
 import net.kalbskinder.events.chat.ChatEvent;
+import net.kalbskinder.events.entity.EntityClickEvent;
+import net.kalbskinder.events.entity.EntityDismountEvent;
 import net.kalbskinder.events.minestom.PlayerEvents;
 import net.kalbskinder.events.minestom.ServerEvents;
 import net.kalbskinder.events.npc.NpcClickEvent;
@@ -22,5 +24,8 @@ public class EventManager {
         new ServerEvents(eventHandler).register();
         new NpcClickEvent(eventHandler).register();
         new ChatEvent(eventHandler).register();
+
+        new EntityClickEvent(eventHandler).register();
+        new EntityDismountEvent(eventHandler).register();
     }
 }

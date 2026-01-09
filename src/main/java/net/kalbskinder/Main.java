@@ -1,5 +1,6 @@
 package net.kalbskinder;
 
+import net.kalbskinder.entities.RallyCar;
 import net.kalbskinder.events.EventManager;
 import net.kalbskinder.systems.npc.InteractableNpc;
 import net.kalbskinder.systems.npc.Npc;
@@ -54,5 +55,10 @@ public class Main {
 
         npc1.setOnLeftClick(player  -> {
             player.sendMessage("You left-clicked the NPC!");
-        }); }
+        });
+
+        // Spawn test rally car (currently just a boat entity).
+        RallyCar rallyCar = new RallyCar();
+        rallyCar.setInstance(instance, new Pos(5.0, 41.0, 0.0));
+    }
 }
