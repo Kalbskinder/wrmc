@@ -59,6 +59,6 @@ public class Main {
 
         // Spawn test rally car (currently just a boat entity).
         RallyCar rallyCar = new RallyCar();
-        rallyCar.setInstance(instance, new Pos(5.0, 41.0, 0.0));
+        rallyCar.setInstance(instance, new Pos(5.0, 40.0, 0.0));
     }
 }

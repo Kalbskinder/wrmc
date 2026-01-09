@@ -1,7 +1,6 @@
 package net.kalbskinder.events.entity;
 
 import net.kalbskinder.events.BasicEvent;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
@@ -19,9 +18,8 @@ public class EntityClickEvent extends BasicEvent {
             Player player = event.getPlayer();
             Entity entity = event.getTarget();
 
-            if (entity.getEntityType() == EntityType.OAK_BOAT) {
+            if (entity.getEntityType() == EntityType.ARMOR_STAND) {
                 entity.addPassenger(player);
-                entity.setVelocity(new Vec(0, 10, 0));
             }
         });
     }
