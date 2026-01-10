@@ -1,11 +1,21 @@
 package net.kalbskinder.entities;
 
+import net.kyori.adventure.util.ARGBLike;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.EquipmentSlot;
+import net.minestom.server.entity.metadata.monster.zombie.ZombieMeta;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
+import net.minestom.server.recipe.display.SlotDisplay;
+import net.minestom.server.tag.Tag;
 
-public class RallyCar extends Entity {
+import java.util.List;
+
+public class RallyCar extends EntityCreature {
 
     private Vec velocity = Vec.ZERO;
     private float yaw;           // car direction
@@ -37,6 +47,9 @@ public class RallyCar extends Entity {
         editEntityMeta(ArmorStandMeta.class, meta -> {
             meta.setSmall(true);
         });
+        //ItemStack carModel = ItemStack.of(Material.STICK).withCustomModelData(List.of(1.0f), List.of(), List.of(), List.of());
+
+        setEquipment(EquipmentSlot.HELMET, ItemStack.of(Material.STICK));
     }
 
     public void setInput(boolean forward, boolean backward, boolean left, boolean right, boolean handbrake) {
